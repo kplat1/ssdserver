@@ -9,6 +9,7 @@ import (
 	// "github.com/goki/mat32"
 	_ "github.com/heroku/x/hmetrics/onload"
 	"encoding/json"
+	"io/ioutil"
 	// "strconv"
 )
 
@@ -39,9 +40,14 @@ func main() {
 	router.GET("/website", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "index.html", nil)
 	})
-	router.POST("/playerPosPost/:json", func(c *gin.Context) {
+	router.POST("/playerPosPost", func(c *gin.Context) {
 		var jsonStruct *PlayerPosData
-		json.Unmarshal([]byte(c.Param("json")), &jsonStruct)
+		b, err := ioutil.ReadAll(c.Request.Body)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		json.Unmarshal(b, &jsonStruct)
 		// points, _ := strconv.Atoi(c.Param("points"))
 		// posX, _ := strconv.ParseFloat(c.Param("posX"), 32)
 		// posY, _ := strconv.ParseFloat(c.Param("posY"), 32)
