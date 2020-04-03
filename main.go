@@ -41,14 +41,14 @@ func main() {
 		c.HTML(http.StatusOK, "index.html", nil)
 	})
 	router.POST("/playerPosPost", func(c *gin.Context) {
-		var jsonStruct *PlayerPosData
+		jsonStruct := &PlayerPosData{}
 		b, err := ioutil.ReadAll(c.Request.Body)
 		if err != nil {
 			log.Println(err)
 			return
 		}
 		log.Println(string(b))
-		json.Unmarshal(b, &jsonStruct)
+		json.Unmarshal(b, jsonStruct)
 		log.Printf("%v", jsonStruct)
 		// points, _ := strconv.Atoi(c.Param("points"))
 		// posX, _ := strconv.ParseFloat(c.Param("posX"), 32)
