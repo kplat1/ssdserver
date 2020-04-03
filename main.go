@@ -36,7 +36,7 @@ func main() {
 	router.GET("/website", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "index.html", nil)
 	})
-	router.POST("/playerPosPost/:username/:battleName/:posX/:posY/:posZ/:points", func(c *gin.Context) {
+	router.POST("/playerPosPost/*username/*battleName/*posX/*posY/*posZ/*points", func(c *gin.Context) {
 		points, _ := strconv.Atoi(c.Param("points"))
 		posX, _ := strconv.ParseFloat(c.Param("posX"), 32)
 		posY, _ := strconv.ParseFloat(c.Param("posY"), 32)
