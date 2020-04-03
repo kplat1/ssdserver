@@ -55,7 +55,7 @@ func main() {
 		// posY, _ := strconv.ParseFloat(c.Param("posY"), 32)
 		// posZ, _ := strconv.ParseFloat(c.Param("posZ"), 32)
 		PlayerPos[jsonStruct.Username] = &PlayerPosData{jsonStruct.Username, jsonStruct.BattleName, jsonStruct.PosX, jsonStruct.PosY, jsonStruct.PosZ, jsonStruct.Points}
-		d := PlayerPos[c.Param("username")]
+		d := PlayerPos[jsonStruct.Username]
 		c.JSON(http.StatusOK, gin.H{"username": d.Username, "battleName": d.BattleName, "posX": d.PosX, "posY": d.PosY, "posZ": d.PosZ, "points": d.Points})
 	})
 
