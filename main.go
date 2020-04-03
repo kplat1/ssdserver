@@ -6,15 +6,18 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
-	"github.com/goki/mat32"
+	// "github.com/goki/mat32"
 	_ "github.com/heroku/x/hmetrics/onload"
-	"strconv"
+	"encoding/json"
+	// "strconv"
 )
 
 type PlayerPosData struct {
 	Username   string
 	BattleName string
-	Pos        mat32.Vec3
+	PosX       float32
+	PosY float32
+	PosZ float32
 	Points     int
 }
 
@@ -31,24 +34,26 @@ func main() {
 	router.Use(gin.Logger())
 	router.LoadHTMLGlob("webFiles/*.html")
 	router.Static("/static", "static")
-	PlayerPos["serverTest"] = &PlayerPosData{"serverTest", "testBattle", mat32.Vec3{1, 1, 1}, 5}
+	PlayerPos["serverTest"] = &PlayerPosData{"serverTest", "testBattle", 1, 1, 1, 5}
 
 	router.GET("/website", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "index.html", nil)
 	})
-	router.POST("/playerPosPost/:username/:battleName/:posX/:posY/:posZ/:points", func(c *gin.Context) {
-		points, _ := strconv.Atoi(c.Param("points"))
-		posX, _ := strconv.ParseFloat(c.Param("posX"), 32)
-		posY, _ := strconv.ParseFloat(c.Param("posY"), 32)
-		posZ, _ := strconv.ParseFloat(c.Param("posZ"), 32)
-		PlayerPos[c.Param("username")] = &PlayerPosData{c.Param("username"), c.Param("battleName"), mat32.Vec3{float32(posX), float32(posY), float32(posZ)}, points}
+	router.POST("/playerPosPost/:json", func(c *gin.Context) {
+		var jsonStruct *PlayerPosData
+		json.Unmarshal([]byte(c.Param("json")), &jsonStruct)
+		// points, _ := strconv.Atoi(c.Param("points"))
+		// posX, _ := strconv.ParseFloat(c.Param("posX"), 32)
+		// posY, _ := strconv.ParseFloat(c.Param("posY"), 32)
+		// posZ, _ := strconv.ParseFloat(c.Param("posZ"), 32)
+		PlayerPos[jsonStruct.Username] = &PlayerPosData{jsonStruct.Username, jsonStruct.BattleName, jsonStruct.PosX, jsonStruct.PosY, jsonStruct.PosZ, jsonStruct.Points}
 		d := PlayerPos[c.Param("username")]
-		c.JSON(http.StatusOK, gin.H{"username": d.Username, "battleName": d.BattleName, "pos": d.Pos, "points": d.Points})
+		c.JSON(http.StatusOK, gin.H{"username": d.Username, "battleName": d.BattleName, "posX": d.PosX, "posY": d.PosY, "posZ": d.PosZ, "points": d.Points})
 	})
 
 	router.GET("/playerPosGet", func(c *gin.Context) {
 		for _, d := range PlayerPos {
-			c.JSON(http.StatusOK, gin.H{"username": d.Username, "battleName": d.BattleName, "pos": d.Pos, "points": d.Points})
+			c.JSON(http.StatusOK, gin.H{"username": d.Username, "battleName": d.BattleName, "posx": d.PosX, "posY": d.PosY, "posZ": d.PosZ, "points": d.Points})
 		}
 	})
 
