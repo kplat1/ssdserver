@@ -42,6 +42,8 @@ func main() {
 		posY, _ := strconv.ParseFloat(c.Param("posY"), 32)
 		posZ, _ := strconv.ParseFloat(c.Param("posZ"), 32)
 		PlayerPos[c.Param("username")] = &PlayerPosData{c.Param("username"), c.Param("battleName"), mat32.Vec3{float32(posX), float32(posY), float32(posZ)}, points}
+		d := PlayerPos[c.Param("username")]
+		c.JSON(http.StatusOK, gin.H{"username": d.Username, "battleName": d.BattleName, "pos": d.Pos, "points": d.Points})
 	})
 
 	router.GET("/playerPosGet", func(c *gin.Context) {
