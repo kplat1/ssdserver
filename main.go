@@ -36,7 +36,7 @@ func main() {
 	router.GET("/website", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "index.html", nil)
 	})
-	router.POST("/playerPosPost/:username", func(c *gin.Context) {
+	router.POST("/playerPosPost", func(c *gin.Context) {
 		// // points, _ := strconv.Atoi(c.Param("points"))
 		// // posX, _ := strconv.ParseFloat(c.Param("posX"), 32)
 		// // posY, _ := strconv.ParseFloat(c.Param("posY"), 32)
@@ -44,8 +44,8 @@ func main() {
 		// // PlayerPos[c.Param("username")] = &PlayerPosData{c.Param("username"), c.Param("battleName"), mat32.Vec3{float32(posX), float32(posY), float32(posZ)}, points}
 		// // d := PlayerPos[c.Param("username")]
 		// c.JSON(http.StatusOK, gin.H{"username": d.Username, "battleName": d.BattleName, "pos": d.Pos, "points": d.Points})
-		PlayerPos[c.Param("username")] = &PlayerPosData{c.Param("username"), "hello", mat32.Vec3{1,1,1}, 2}
-		d := PlayerPos[c.Param("username")]
+		PlayerPos["postTest"] = &PlayerPosData{"postTest", "hello", mat32.Vec3{1,1,1}, 2}
+		d := PlayerPos["postTest"]
 		c.JSON(http.StatusOK, gin.H{"username": d.Username, "battleName": d.BattleName, "pos": d.Pos, "points": d.Points})
 	})
 
