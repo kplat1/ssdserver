@@ -21,7 +21,7 @@ func main() {
 	router.LoadHTMLGlob("webFiles/*.html")
 	router.Static("/static", "static")
 
-	router.GET("/", func(c *gin.Context) {
+	router.GET("/website", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "index.html", nil)
 	})
 
