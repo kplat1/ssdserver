@@ -11,7 +11,7 @@ import (
 	_ "github.com/heroku/x/hmetrics/onload"
 	"sync"
 	// "io/ioutil"
-	// "strconv"
+	"strconv"
 )
 
 type PlayerPosData struct {
@@ -125,6 +125,17 @@ func main() {
 		ServerMutex.Unlock()
 	})
 
+
+router.POST("/fireEventsDelete", func(c *gin.Context) {
+	ServerMutex.Lock()
+	battleName := c.Query("battleName")
+	keyS := c.Query("key")
+	key, _ := strconv.Atoi(keyS)
+	femap := TheFireEvents[battleName]
+	delete(femap, key)
+	TheFireEvents[battleName] = femap
+	ServerMutex.Unlock()
+})
 	router.GET("/fireEventsGet", func(c *gin.Context) {
 		ServerMutex.Lock()
 		battleName := c.Query("battleName")
