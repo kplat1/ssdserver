@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
-	// "github.com/goki/mat32"
+	"github.com/goki/mat32"
 	"encoding/json"
 	_ "github.com/heroku/x/hmetrics/onload"
 	// "io/ioutil"
@@ -16,9 +16,7 @@ import (
 type PlayerPosData struct {
 	Username   string
 	BattleName string
-	PosX       float32
-	PosY       float32
-	PosZ       float32
+	Pos mat32.Vec3
 	Points     int
 }
 
@@ -55,12 +53,12 @@ func main() {
 		PlayerPos[jsonStruct.Username] = &PlayerPosData{jsonStruct.Username, jsonStruct.BattleName, jsonStruct.PosX, jsonStruct.PosY, jsonStruct.PosZ, jsonStruct.Points}
 		d := PlayerPos[jsonStruct.Username]
 		log.Printf("Data: %v \n", d)
-		c.JSON(http.StatusOK, gin.H{"username": d.Username, "battleName": d.BattleName, "posX": d.PosX, "posY": d.PosY, "posZ": d.PosZ, "points": d.Points})
+		c.JSON(http.StatusOK, gin.H{"username": d.Username, "battleName": d.BattleName, "pos": d.Pos, "points": d.Points})
 	})
 
 	router.GET("/playerPosGet", func(c *gin.Context) {
 		for _, d := range PlayerPos {
-			c.JSON(http.StatusOK, gin.H{"username": d.Username, "battleName": d.BattleName, "posx": d.PosX, "posY": d.PosY, "posZ": d.PosZ, "points": d.Points})
+			c.JSON(http.StatusOK, gin.H{"username": d.Username, "battleName": d.BattleName, "pos": d.Pos, "points": d.Points})
 		}
 	})
 
