@@ -58,14 +58,14 @@ func main() {
 		PlayerPos[jsonStruct.Username] = &PlayerPosData{jsonStruct.Username, jsonStruct.BattleName, jsonStruct.Pos, jsonStruct.Points}
 		d := PlayerPos[jsonStruct.Username]
 		log.Printf("Data: %v \n", d)
-		c.JSON(http.StatusOK, gin.H{"username": d.Username, "battleName": d.BattleName, "pos": d.Pos, "points": d.Points})
+		c.JSON(http.StatusOK, gin.H{"Username": d.Username, "BattleName": d.BattleName, "Pos": d.Pos, "Points": d.Points})
 		ServerMutex.Unlock()
 	})
 
 	router.GET("/playerPosGet", func(c *gin.Context) {
 		ServerMutex.Lock()
 		for _, d := range PlayerPos {
-			c.JSON(http.StatusOK, gin.H{"username": d.Username, "battleName": d.BattleName, "pos": d.Pos, "points": d.Points})
+			c.JSON(http.StatusOK, gin.H{"Username": d.Username, "BattleName": d.BattleName, "Pos": d.Pos, "Points": d.Points})
 		}
 		ServerMutex.Unlock()
 	})
