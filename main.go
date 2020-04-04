@@ -73,6 +73,7 @@ func main() {
 		if !exists {
 			log.Printf("Didn't get battle name!")
 			c.String(422, "text/text", "Did not get battle name, fail")
+			ServerMutex.Unlock()
 			return
 		}
 		battleName := battleNameI.(string)
@@ -81,6 +82,7 @@ func main() {
 		if !ok || ppmap == nil {
 			log.Printf("Battle maps nil")
 			c.String(422, "text/text", "Battle map nil")
+			ServerMutex.Unlock()
 			return
 		}
 		c.JSON(http.StatusOK, ppmap)
