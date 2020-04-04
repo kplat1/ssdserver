@@ -57,17 +57,17 @@ func main() {
 		// posZ, _ := strconv.ParseFloat(c.Param("posZ"), 32)
 		PlayerPos[jsonStruct.Username] = &PlayerPosData{jsonStruct.Username, jsonStruct.BattleName, jsonStruct.Pos, jsonStruct.Points}
 		d := PlayerPos[jsonStruct.Username]
-		b, _ := json.Marshal(d)
+		c.BindJSON(&d)
 		log.Printf("Data: %v \n", d)
-		c.JSON(http.StatusOK, b)
+		c.JSON(http.StatusOK, gin.H{"Username": d.Username, "BattleName": d.BattleName, "Pos": d.Pos, "Points": d.Points})
 		ServerMutex.Unlock()
 	})
 
 	router.GET("/playerPosGet", func(c *gin.Context) {
 		ServerMutex.Lock()
 		for _, d := range PlayerPos {
-			b, _ := json.Marshal(d)
-			c.JSON(http.StatusOK, b)
+			c.BindJSON(&d)
+			c.JSON(http.StatusOK, gin.H{"Username": d.Username, "BattleName": d.BattleName, "Pos": d.Pos, "Points": d.Points})
 		}
 		ServerMutex.Unlock()
 	})
