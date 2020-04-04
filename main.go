@@ -67,7 +67,7 @@ func main() {
 		ServerMutex.Lock()
 		for _, d := range PlayerPos {
 			c.BindJSON(&d)
-			c.JSON(http.StatusOK, gin.H{"Username": d.Username, "BattleName": d.BattleName, "Pos": d.Pos, "Points": d.Points})
+			c.JSON(http.StatusOK, gin.H{"Username": d.Username, "BattleName": d.BattleName, "Pos": d.Pos, "Points": d.Points,})
 		}
 		ServerMutex.Unlock()
 	})
