@@ -46,6 +46,7 @@ func main() {
 			log.Printf("Err: %v \n", err)
 		}
 		log.Printf("Struct: %v", jsonStruct)
+		log.Printf("Battle Name: %v", jsonStruct.BattleName)
 		// points, _ := strconv.Atoi(c.Param("points"))
 		// posX, _ := strconv.ParseFloat(c.Param("posX"), 32)
 		// posY, _ := strconv.ParseFloat(c.Param("posY"), 32)
