@@ -70,11 +70,11 @@ func main() {
 	router.GET("/playerPosGet", func(c *gin.Context) {
 		ServerMutex.Lock()
 		battleNameI, exists := c.Get("battleName")
-		battleName := battleNameI.(string)
 		if !exists {
 			log.Printf("Didn't get battle name!")
 			return
 		}
+		battleName := battleNameI.(string)
 		ppmap, ok := TheBattleMaps[battleName]
 		if !ok || ppmap == nil {
 			log.Printf("Battle maps nil")
