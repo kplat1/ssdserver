@@ -48,7 +48,7 @@ func main() {
 			return
 		}
 		log.Println(string(b))
-		json.Unmarshal(b, jsonStruct)
+		json.Unmarshal(b, &jsonStruct)
 		log.Printf("%v", jsonStruct)
 		// points, _ := strconv.Atoi(c.Param("points"))
 		// posX, _ := strconv.ParseFloat(c.Param("posX"), 32)
