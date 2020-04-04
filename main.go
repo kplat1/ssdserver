@@ -77,6 +77,7 @@ func main() {
 		}
 		battleName := battleNameI.(string)
 		ppmap, ok := TheBattleMaps[battleName]
+		log.Printf("Pppmap: %v Ok: %v", ppmap, ok)
 		if !ok || ppmap == nil {
 			log.Printf("Battle maps nil")
 			c.String(422, "text/text", "Battle map nil")
