@@ -72,12 +72,14 @@ func main() {
 		battleNameI, exists := c.Get("battleName")
 		if !exists {
 			log.Printf("Didn't get battle name!")
+			c.String(422, "text/text", "Did not get battle name, fail")
 			return
 		}
 		battleName := battleNameI.(string)
 		ppmap, ok := TheBattleMaps[battleName]
 		if !ok || ppmap == nil {
 			log.Printf("Battle maps nil")
+			c.String(422, "text/text", "Battle map nil")
 			return
 		}
 		c.JSON(http.StatusOK, ppmap)
