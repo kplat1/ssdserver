@@ -21,9 +21,11 @@ type PlayerPosData struct {
 	Points     int
 }
 
-var ServerMutex sync.Mutex
+type PlayerPosMap map[string]*PlayerPosData
 
-var PlayerPos map[string]*PlayerPosData
+var TheBattleMaps map[string]PlayerPosMap
+
+var ServerMutex sync.Mutex
 
 func main() {
 	port := os.Getenv("PORT")
@@ -31,12 +33,12 @@ func main() {
 	if port == "" {
 		log.Fatal("$PORT must be set")
 	}
-	PlayerPos = make(map[string]*PlayerPosData)
+	TheBattleMaps = make(map[string]PlayerPosMap)
 	router := gin.New()
 	router.Use(gin.Logger())
 	router.LoadHTMLGlob("webFiles/*.html")
 	router.Static("/static", "static")
-	PlayerPos["serverTest"] = &PlayerPosData{"serverTest", "testBattle", mat32.Vec3{1,1,1}, 5}
+	// PlayerPos["serverTest"] = &PlayerPosData{"serverTest", "testBattle", mat32.Vec3{1,1,1}, 5}
 
 	router.GET("/website", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "index.html", nil)
@@ -55,21 +57,30 @@ func main() {
 		// posX, _ := strconv.ParseFloat(c.Param("posX"), 32)
 		// posY, _ := strconv.ParseFloat(c.Param("posY"), 32)
 		// posZ, _ := strconv.ParseFloat(c.Param("posZ"), 32)
-		PlayerPos[jsonStruct.Username] = &PlayerPosData{jsonStruct.Username, jsonStruct.BattleName, jsonStruct.Pos, jsonStruct.Points}
-		d := PlayerPos[jsonStruct.Username]
-		c.BindJSON(&d)
-		log.Printf("Data: %v \n", d)
-		c.JSON(http.StatusOK, gin.H{"Username": d.Username, "BattleName": d.BattleName, "Pos": d.Pos, "Points": d.Points})
+		ppmap, ok := TheBattleMaps[jsonStruct.BattleName]
+		if !ok || ppmap == nil{
+			ppmap = make(PlayerPosMap)
+			TheBattleMaps[jsonStruct.BattleName] = ppmap
+		}
+		ppmap[jsonStruct.Username] = jsonStruct
+		TheBattleMaps[jsonStruct.BattleName] = ppmap
 		ServerMutex.Unlock()
 	})
 
 	router.GET("/playerPosGet", func(c *gin.Context) {
 		ServerMutex.Lock()
-		battleMap := make(map[string]*PlayerPosData)
-		for _, d := range PlayerPos {
-			battleMap[d.Username] = &PlayerPosData{d.Username, d.BattleName, d.Pos, d.Points}
+		battleNameI, exists := c.Get("battleName")
+		battleName := battleNameI.(string)
+		if !exists {
+			log.Printf("Didn't get battle name!")
+			return
 		}
-		c.JSON(http.StatusOK, battleMap)
+		ppmap, ok := TheBattleMaps[battleName]
+		if !ok || ppmap == nil {
+			log.Printf("Battle maps nil")
+			return
+		}
+		c.JSON(http.StatusOK, ppmap)
 		ServerMutex.Unlock()
 	})
 
