@@ -33,7 +33,7 @@ func main() {
 	router.Use(gin.Logger())
 	router.LoadHTMLGlob("webFiles/*.html")
 	router.Static("/static", "static")
-	PlayerPos["serverTest"] = &PlayerPosData{"serverTest", "testBattle", 1, 1, 1, 5}
+	PlayerPos["serverTest"] = &PlayerPosData{"serverTest", "testBattle", mat32.Vec3{1,1,1}, 5}
 
 	router.GET("/website", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "index.html", nil)
@@ -50,7 +50,7 @@ func main() {
 		// posX, _ := strconv.ParseFloat(c.Param("posX"), 32)
 		// posY, _ := strconv.ParseFloat(c.Param("posY"), 32)
 		// posZ, _ := strconv.ParseFloat(c.Param("posZ"), 32)
-		PlayerPos[jsonStruct.Username] = &PlayerPosData{jsonStruct.Username, jsonStruct.BattleName, jsonStruct.PosX, jsonStruct.PosY, jsonStruct.PosZ, jsonStruct.Points}
+		PlayerPos[jsonStruct.Username] = &PlayerPosData{jsonStruct.Username, jsonStruct.BattleName, jsonStruct.Pos, jsonStruct.Points}
 		d := PlayerPos[jsonStruct.Username]
 		log.Printf("Data: %v \n", d)
 		c.JSON(http.StatusOK, gin.H{"username": d.Username, "battleName": d.BattleName, "pos": d.Pos, "points": d.Points})
