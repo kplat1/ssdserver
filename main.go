@@ -9,6 +9,7 @@ import (
 	"github.com/goki/mat32"
 	"encoding/json"
 	_ "github.com/heroku/x/hmetrics/onload"
+	"sync"
 	// "io/ioutil"
 	// "strconv"
 )
@@ -19,6 +20,8 @@ type PlayerPosData struct {
 	Pos mat32.Vec3
 	Points     int
 }
+
+var ServerMutex sync.Mutex
 
 var PlayerPos map[string]*PlayerPosData
 
@@ -39,6 +42,7 @@ func main() {
 		c.HTML(http.StatusOK, "index.html", nil)
 	})
 	router.POST("/playerPosPost", func(c *gin.Context) {
+		ServerMutex.Lock()
 		jsonStruct := &PlayerPosData{}
 		decoder := json.NewDecoder(c.Request.Body)
 		err := decoder.Decode(jsonStruct)
@@ -55,12 +59,15 @@ func main() {
 		d := PlayerPos[jsonStruct.Username]
 		log.Printf("Data: %v \n", d)
 		c.JSON(http.StatusOK, gin.H{"username": d.Username, "battleName": d.BattleName, "pos": d.Pos, "points": d.Points})
+		ServerMutex.Unlock()
 	})
 
 	router.GET("/playerPosGet", func(c *gin.Context) {
+		ServerMutex.Lock()
 		for _, d := range PlayerPos {
 			c.JSON(http.StatusOK, gin.H{"username": d.Username, "battleName": d.BattleName, "pos": d.Pos, "points": d.Points})
 		}
+		ServerMutex.Unlock()
 	})
 
 	// router.POST("/playerPos", func(c *gin.Context) {
