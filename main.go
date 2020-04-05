@@ -169,8 +169,8 @@ func main() {
 		}
 		lastIndex := UsernameLastIndexMap[c.Query("username")]
 		returnMap := femap[lastIndex:]
-		UsernameLastIndexMap[c.Query("username")] = len(returnMap)
-		c.JSON(http.StatusOK, femap)
+		UsernameLastIndexMap[c.Query("username")] = len(femap)
+		c.JSON(http.StatusOK, returnMap)
 		ServerMutex.Unlock()
 	})
 
