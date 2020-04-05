@@ -10,8 +10,9 @@ import (
 	"github.com/goki/mat32"
 	_ "github.com/heroku/x/hmetrics/onload"
 	"sync"
+	"time"
 	// "io/ioutil"
-	"strconv"
+	// "strconv"
 )
 
 type PlayerPosData struct {
@@ -27,15 +28,16 @@ type FireEvent struct {
 	Dir        mat32.Vec3
 	Damage     int
 	BattleName string
+	StartTime  time.Time
 }
 
 type PlayerPosMap map[string]*PlayerPosData
 
-type FireEventMap map[int]*FireEvent
+type FireEventSlice []*FireEvent
 
 var TheBattleMaps map[string]PlayerPosMap
 
-var TheFireEvents map[string]FireEventMap
+var TheFireEvents map[string]FireEventSlice
 
 var ServerMutex sync.Mutex
 
@@ -46,7 +48,7 @@ func main() {
 		log.Fatal("$PORT must be set")
 	}
 	TheBattleMaps = make(map[string]PlayerPosMap)
-	TheFireEvents = make(map[string]FireEventMap)
+	TheFireEvents = make(map[string]FireEventSlice)
 	router := gin.New()
 	router.Use(gin.Logger())
 	router.LoadHTMLGlob("webFiles/*.html")
@@ -117,32 +119,34 @@ func main() {
 		// posZ, _ := strconv.ParseFloat(c.Param("posZ"), 32)
 		femap, ok := TheFireEvents[jsonStruct.BattleName]
 		if !ok || femap == nil {
-			femap = make(FireEventMap)
+			femap = make(FireEventSlice, 1)
 			TheFireEvents[jsonStruct.BattleName] = femap
+			femap[0] = jsonStruct
+		} else {
+			femap = append(femap, jsonStruct)
 		}
-		femap[len(femap)] = jsonStruct
 		TheFireEvents[jsonStruct.BattleName] = femap
 		ServerMutex.Unlock()
 	})
 
-	router.POST("/fireEventsDelete", func(c *gin.Context) {
-		ServerMutex.Lock()
-		battleName := c.Query("battleName")
-		keyS := c.Query("key")
-		if battleName == "" {
-			log.Printf("Didn't get battle name!")
-			c.String(422, "text/text", "Did not get battle name, fail")
-			ServerMutex.Unlock()
-			return
-		}
-
-		key, _ := strconv.Atoi(keyS)
-		log.Printf("Battle Name: %v   Key: %v \n", battleName, key)
-		femap := TheFireEvents[battleName]
-		delete(femap, key)
-		TheFireEvents[battleName] = femap
-		ServerMutex.Unlock()
-	})
+	// router.POST("/fireEventsDelete", func(c *gin.Context) {
+	// 	ServerMutex.Lock()
+	// 	battleName := c.Query("battleName")
+	// 	keyS := c.Query("key")
+	// 	if battleName == "" {
+	// 		log.Printf("Didn't get battle name!")
+	// 		c.String(422, "text/text", "Did not get battle name, fail")
+	// 		ServerMutex.Unlock()
+	// 		return
+	// 	}
+	//
+	// 	key, _ := strconv.Atoi(keyS)
+	// 	log.Printf("Battle Name: %v   Key: %v \n", battleName, key)
+	// 	femap := TheFireEvents[battleName]
+	// 	delete(femap, key)
+	// 	TheFireEvents[battleName] = femap
+	// 	ServerMutex.Unlock()
+	// })
 	router.GET("/fireEventsGet", func(c *gin.Context) {
 		ServerMutex.Lock()
 		battleName := c.Query("battleName")
