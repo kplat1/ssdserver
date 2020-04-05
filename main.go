@@ -41,6 +41,8 @@ var TheFireEvents map[string]FireEventSlice
 
 var ServerMutex sync.Mutex
 
+var UsernameLastIndexMap map[string]int
+
 func main() {
 	port := os.Getenv("PORT")
 
@@ -49,6 +51,7 @@ func main() {
 	}
 	TheBattleMaps = make(map[string]PlayerPosMap)
 	TheFireEvents = make(map[string]FireEventSlice)
+	UsernameLastIndexMap = make(map[string]int)
 	router := gin.New()
 	router.Use(gin.Logger())
 	router.LoadHTMLGlob("webFiles/*.html")
@@ -164,6 +167,9 @@ func main() {
 			ServerMutex.Unlock()
 			return
 		}
+		lastIndex := UsernameLastIndexMap[c.Query("username")]
+		returnMap := femap[lastIndex:]
+		UsernameLastIndexMap[c.Query("username")] = len(returnMap)
 		c.JSON(http.StatusOK, femap)
 		ServerMutex.Unlock()
 	})
