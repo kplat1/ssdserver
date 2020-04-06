@@ -20,7 +20,8 @@ type PlayerPosData struct {
 	BattleName string
 	Pos        mat32.Vec3
 	Points     int
-	KilledBy string
+	KilledBy   string
+	SpawnCount int
 }
 
 type FireEvent struct {
