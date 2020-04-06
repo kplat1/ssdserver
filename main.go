@@ -151,6 +151,9 @@ func main() {
 	// 	TheFireEvents[battleName] = femap
 	// 	ServerMutex.Unlock()
 	// })
+	router.POST("cleanUpBattle", func(c *gin.Context) {
+		TheFireEvents[c.Query("battleName")] = nil
+	})
 	router.GET("/fireEventsGet", func(c *gin.Context) {
 		ServerMutex.Lock()
 		battleName := c.Query("battleName")
